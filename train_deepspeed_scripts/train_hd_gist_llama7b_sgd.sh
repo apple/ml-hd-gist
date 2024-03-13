@@ -1,0 +1,20 @@
+export port=$(shuf -i25000-30000 -n1); deepspeed --master_port $port \
+    --num_gpus=8 --no_local_rank \
+    --module train \
+    +model=llama-7b \
+    training.deepspeed=ds_configs/stage3_offload.json \
+    data.dataset_name=sgd \
+    data.config_name=d3st_prompt+date_jsonInstruct \
+    wandb.tag=hd_gist_8gpu_deepspeed \
+    training.tf32=true \
+    training.per_device_train_batch_size=1 \
+    training.per_device_eval_batch_size=1 \
+    training.gradient_accumulation_steps=4 \
+    model.max_length=1500 \
+    +training.max_new_tokens=80 \
+    training.gist.add_gist_token=false \
+    training.gist.condition=gist \
+    training.gist.add_slot_gist_token=true \
+    training.gist.add_ctg_val_gist_token=true \
+    training.gist.inbatch_reconstruct_ratio=0.1 \
+    training.seed=42
